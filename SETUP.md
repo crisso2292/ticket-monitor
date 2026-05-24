@@ -36,8 +36,9 @@
    | `STUBHUB_EVENT_URL` | StubHub event URL from step 3 |
    | `GAMETIME_EVENT_URL` | Gametime event URL from step 3 |
 
-4. Set the **cron schedule** in the Railway service settings: `*/15 * * * *` (every 15 minutes).
-5. Railway will build the Dockerfile automatically. No additional config needed.
+4. **Add a volume** for SQLite persistence: go to your service → Settings → Volumes → Add Volume. Set mount path to `/app/data`. This preserves the alert-dedup database and health state across redeploys.
+5. Set the **cron schedule** in the Railway service settings: `*/15 * * * *` (every 15 minutes).
+6. Railway will build the Dockerfile automatically. No additional config needed.
 
 ## 5. Verify
 
@@ -47,6 +48,6 @@
 
 ## Notes
 
-- **SQLite persistence**: The database lives in the container's filesystem. Data resets on each redeploy. For persistent storage, consider Railway's volume mounts or migrate to Postgres in the future.
+- **SQLite persistence**: The volume mount (step 4.4) keeps the database across redeploys. Without it, the alert-dedup state resets and you may receive duplicate Telegram alerts. For higher durability, migrate to Postgres in the future.
 - **Cron behavior**: Railway starts the container on schedule, runs the command, and expects the process to exit. The monitor exits after each cycle — this is by design.
 - **Local testing**: `cp .env.example .env`, fill in real values, then run `uv run python -m ticket_monitor.main`.
