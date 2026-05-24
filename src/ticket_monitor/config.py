@@ -13,6 +13,5 @@ class Settings(BaseSettings):
     telegram_chat_id: str
     price_threshold: float = 6000.0
     min_quantity: int = 2
-    stubhub_event_url: str
     gametime_event_url: str
     data_dir: Path = PROJECT_ROOT / "data"
