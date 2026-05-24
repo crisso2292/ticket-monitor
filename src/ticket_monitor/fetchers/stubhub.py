@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from apify_client import ApifyClientAsync
 
@@ -15,8 +15,8 @@ async def fetch_stubhub(config: Settings) -> list[Listing]:
     try:
         client = ApifyClientAsync(config.apify_token)
         run_input = {"eventUrl": config.stubhub_event_url}
-        run = await client.actor(ACTOR_ID).call(run_input=run_input, timeout_secs=120)
-        items = (await client.dataset(run["defaultDatasetId"]).list_items()).items
+        run = await client.actor(ACTOR_ID).call(run_input=run_input, run_timeout=timedelta(seconds=120))
+        items = (await client.dataset(run.default_dataset_id).list_items()).items
     except Exception as exc:
         logger.error("StubHub fetch failed: %s", exc)
         return []
